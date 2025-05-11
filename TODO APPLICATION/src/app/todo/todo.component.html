@@ -1,0 +1,110 @@
+<div class="min-h-screen bg-white flex flex-col items-center px-4 py-8">
+  <div class="w-full max-w-md bg-[#f7f3ea] rounded-3xl p-6 shadow-sm">
+    <h1 class="text-5xl font-bold mb-8 text-center">
+      <span class="text-black">Todo</span>
+      <span class="text-[#b6dbe3]">List</span>
+    </h1>
+
+    <!-- Add task input -->
+    <div class="w-full relative mb-4">
+      <input
+        matInput
+        [(ngModel)]="newTodoTitle"
+        placeholder="Add a new task"
+        class="w-full py-3 px-4 rounded-full border border-[#d9d9d9] bg-transparent text-black placeholder-[#9d9d9d] focus:outline-none"
+        (keydown.enter)="addTodo()"
+      />
+      <button
+        mat-mini-fab
+        (click)="addTodo()"
+        class="absolute bottom-11 " style="left: 21.5rem;"
+      >
+        <mat-icon class="text-white">add</mat-icon>
+      </button>
+    </div>
+
+    <!-- Search bar -->
+    <div class="w-full relative mb-6">
+      <input
+        matInput
+        [(ngModel)]="searchText"
+        placeholder="Search"
+        class="w-full py-3 px-4 rounded-full border border-[#d9d9d9] bg-transparent text-black placeholder-[#9d9d9d] focus:outline-none"
+      />
+      <mat-icon class="absolute right-4 top-3 text-[#9d9d9d]">search</mat-icon>
+    </div>
+
+    <!-- Tabs -->
+    <div class="w-full flex justify-between mb-2">
+      <button
+        (click)="setActiveTab('tasks')"
+        class="flex items-center gap-2 font-medium"
+        [ngClass]="activeTab === 'tasks' ? 'text-black' : 'text-[#9d9d9d]'"
+      >
+        Tasks
+        <span class="bg-[#d9d9d9] text-black rounded-full px-3 py-1 text-sm">
+          {{ incompleteTasks }}
+        </span>
+      </button>
+      <button
+        (click)="setActiveTab('completed')"
+        class="flex items-center gap-2 font-medium"
+        [ngClass]="activeTab === 'completed' ? 'text-black' : 'text-[#9d9d9d]'"
+      >
+        Completed
+        <span class="bg-[#d9d9d9] text-black rounded-full px-3 py-1 text-sm">
+          {{ completedTasks }}
+        </span>
+      </button>
+    </div>
+
+    <div class="w-full border-t border-[#d9d9d9] mb-4"></div>
+
+    <!-- Task list -->
+    <div class="w-full space-y-4">
+      <div
+        *ngFor="let todo of filteredTodos"
+        [ngClass]="todo.completed ? 'bg-[#f5d1d4]' : 'bg-[#b6dbe3]'"
+        class="p-4 rounded-xl flex items-start justify-between"
+      >
+        <div class="flex items-start gap-3">
+          <button
+            (click)="todo.completed = !todo.completed; updateTodo(todo)"
+            [ngClass]="todo.completed ? 'bg-[#5e60ce]' : 'bg-transparent'"
+            class="mt-1 w-6 h-6 rounded-full flex items-center justify-center border-2 border-black flex-shrink-0"
+          >
+            <mat-icon *ngIf="todo.completed" class="text-white text-xs">check</mat-icon>
+          </button>
+          
+          <ng-container *ngIf="editingTodo?.id !== todo.id; else editTemplate">
+              {{ todo.title }}
+          </ng-container>
+          
+          <ng-template #editTemplate>
+            <input
+              matInput
+              [(ngModel)]="editText"
+              class="flex-1 bg-transparent border-b border-black focus:outline-none"
+              (keydown.enter)="saveEdit()"
+              (keydown.escape)="cancelEdit()"
+            />
+          </ng-template>
+        </div>
+        
+        <div class="flex flex-col gap-2">
+          <button (click)="deleteTodo(todo.id)" class="flex-shrink-0">
+            <mat-icon class="text-black">delete</mat-icon>
+          </button>
+          
+          <button *ngIf="editingTodo?.id !== todo.id" (click)="startEdit(todo)" class="flex-shrink-0">
+            <mat-icon class="text-black">edit</mat-icon>
+          </button>
+          
+          <button *ngIf="editingTodo?.id === todo.id" (click)="saveEdit()" class="flex-shrink-0">
+            <mat-icon class="text-black">save</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
